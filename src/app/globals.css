@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-slate-900 antialiased selection:bg-primary-100 selection:text-primary-900;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-white/40 backdrop-blur-[40px] border border-white/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)];
+}
+.glass-button {
+  @apply bg-white/60 hover:bg-white/80 backdrop-blur-md border border-white/50 transition-all;
+}
