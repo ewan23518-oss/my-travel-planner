@@ -18,7 +18,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'API KEY 未配置' }, { status: 500 });
     }
     
-    // 恢复最详尽的规划逻辑指令
     const promptText = `
 你是一个顶级的旅行规划AI，你的任务是根据用户要求，返回一个结构完整、数据准确的JSON。
 
@@ -84,14 +83,15 @@ export async function POST(req: Request) {
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
     
-    // 保持长连接配置
-    const proxyAgent = new HttpsProxyAgent('http://127.0.0.1:7897', {
+    // 自动判断代理：仅在本地环境且配置了代理时使用
+    const proxyUrl = process.env.PROXY_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:7897' : null);
+    const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl, {
       keepAlive: true,
       timeout: 300000,
       scheduling: 'lifo'
-    });
+    }) : undefined;
 
-    const fetchOptions = {
+    const fetchOptions: any = {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -108,9 +108,12 @@ export async function POST(req: Request) {
           max_output_tokens: 8192
         }
       }),
-      agent: proxyAgent,
       timeout: 300000 
     };
+
+    if (proxyAgent) {
+      fetchOptions.agent = proxyAgent;
+    }
 
     const maxRetries = 3;
     let lastError;
@@ -124,7 +127,6 @@ export async function POST(req: Request) {
           const data: any = await response.json();
           let responseText = data.candidates[0].content.parts[0].text;
           
-          // 鲁棒性清洗 JSON
           const firstBrace = responseText.indexOf('{');
           const lastBrace = responseText.lastIndexOf('}');
           if (firstBrace !== -1 && lastBrace !== -1) {
@@ -134,7 +136,6 @@ export async function POST(req: Request) {
 
           const parsedData = JSON.parse(responseText);
 
-          // 核心修复：更灵活的类型转换，防止出现 ¥0
           const result: TripResult = {
             id: `trip-${Date.now()}`,
             destination: typeof parsedData.destination === 'string' ? parsedData.destination : input.destination,

@@ -16,7 +16,10 @@ export async function GET(request: Request) {
 
   const modelName = 'gemini-3-flash-preview';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-  const proxyAgent = new HttpsProxyAgent('http://127.0.0.1:7897');
+  
+  // 自动判断代理
+  const proxyUrl = process.env.PROXY_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:7897' : null);
+  const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
 
   const promptText = `你现在是一个实时价格查询 API。你需要根据 ${origin} 到 ${destination} 的真实情况（去程 ${departDate}，回程 ${returnDate}），以及 ${destination} 的真实酒店价格。
 请尽量使用搜索工具获取当前真实的机票和酒店信息，不要虚构！酒店请根据以下标准推荐：经济型 (100-300元)，舒适/四星 (300-600元)，豪华/五星 (800元以上)。
@@ -55,7 +58,7 @@ export async function GET(request: Request) {
 要求提供 3 班航班和 5 家酒店。确保返回的酒店价格段覆盖齐全，特别是舒适/四星级的价格应在 300-600 元之间。`;
 
   try {
-    const response = await fetch(apiUrl, {
+    const fetchOptions: any = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,9 +75,14 @@ export async function GET(request: Request) {
           temperature: 0.1,
           response_mime_type: "application/json",
         }
-      }),
-      agent: proxyAgent
-    });
+      })
+    };
+
+    if (proxyAgent) {
+      fetchOptions.agent = proxyAgent;
+    }
+
+    const response = await fetch(apiUrl, fetchOptions);
 
     const data: any = await response.json();
 
@@ -87,14 +95,12 @@ export async function GET(request: Request) {
     
     let parsedData;
     try {
-      // 鲁棒性清洗：提取第一个 { 和最后一个 } 之间的内容
       let cleanText = responseText;
       const firstBrace = cleanText.indexOf('{');
       const lastBrace = cleanText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
         cleanText = cleanText.substring(firstBrace, lastBrace + 1);
       }
-      // 移除尾部逗号
       cleanText = cleanText.replace(/,\s*([\]}])/g, '$1');
       parsedData = JSON.parse(cleanText);
     } catch (e) {
