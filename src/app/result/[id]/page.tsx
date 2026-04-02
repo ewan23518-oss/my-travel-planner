@@ -39,6 +39,13 @@ export default function ResultPage({ params }: { params: { id: string } }) {
         const to = tripResult.dailyPlans[0]?.activities[0]?.location || `${city}市中心`;
         const from = `${city}机场`;
         
+        // 自动识别环境，生产环境下不请求本地 3030 端口
+        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isDev) {
+          console.warn("Traffic API (port 3030) is not available in production. Skipping traffic fetch.");
+          return;
+        }
+
         let res = await fetch(`http://localhost:3030/api/traffic?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&city=${encodeURIComponent(city)}`);
         let data = await res.json();
         if (data.status === 'success') {
