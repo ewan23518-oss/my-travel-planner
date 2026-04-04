@@ -1,0 +1,7 @@
+node_modules/
+.next/
+dist/
+.env*
+.openclaw/
+*.log
+.DS_Store
