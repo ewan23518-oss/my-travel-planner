@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: false, error: 'GEMINI_API_KEY 未配置' }, { status: 500 });
   }
 
-  const modelName = 'gemini-3-flash-preview';
+  const modelName = 'Gemma431B';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
   
   // 自动判断代理

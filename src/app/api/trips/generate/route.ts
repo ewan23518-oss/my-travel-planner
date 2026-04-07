@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '目的地不能为空' }, { status: 400 });
     }
 
-    const modelName = 'gemini-3-flash-preview';
+    const modelName = 'Gemma431B';
 
     if (!apiKey) {
       return NextResponse.json({ error: 'API KEY 未配置' }, { status: 500 });
