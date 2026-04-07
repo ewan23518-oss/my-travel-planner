@@ -1,14 +1,11 @@
+"use client";
+
 import React from 'react';
 
-interface PriceComparatorProps {
-  // Define props if any
-}
-
-const PriceComparator: React.FC<PriceComparatorProps> = () => {
+const PriceComparator: React.FC = () => {
   return (
-    <div>
-      {/* Placeholder for PriceComparator component */}
-      <p>PriceComparator Component</p>
+    <div style={{ display: 'none' }}>
+      {/* PriceComparator logic placeholder */}
     </div>
   );
 };
