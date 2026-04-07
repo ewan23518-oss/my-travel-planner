@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import fetch from 'node-fetch';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -17,10 +15,6 @@ export async function GET(request: Request) {
   const modelName = 'Gemma431B';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
   
-  // 自动判断代理
-  const proxyUrl = process.env.PROXY_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:7897' : null);
-  const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
-
   const promptText = `你现在是一个实时价格查询 API。你需要根据 ${origin} 到 ${destination} 的真实情况（去程 ${departDate}，回程 ${returnDate}），以及 ${destination} 的真实酒店价格。
 请尽量使用搜索工具获取当前真实的机票和酒店信息，不要虚构！酒店请根据以下标准推荐：经济型 (100-300元)，舒适/四星 (300-600元)，豪华/五星 (800元以上)。
 
@@ -77,10 +71,6 @@ export async function GET(request: Request) {
         }
       })
     };
-
-    if (proxyAgent) {
-      fetchOptions.agent = proxyAgent;
-    }
 
     const response = await fetch(apiUrl, fetchOptions);
 
