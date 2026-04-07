@@ -1,14 +1,15 @@
 import React from 'react';
 
 interface MapRouteProps {
-  // Define props if any
+  activities: any[];
+  style: any;
 }
 
-const MapRoute: React.FC<MapRouteProps> = () => {
+const MapRoute: React.FC<MapRouteProps> = ({ activities, style }) => {
   return (
-    <div>
-      {/* Placeholder for MapRoute component */}
-      <p>MapRoute Component</p>
+    <div style={{ height: '400px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+      {/* Map Placeholder */}
+      <p>Map showing {activities.length} locations</p>
     </div>
   );
 };

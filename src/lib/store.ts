@@ -1,13 +1,11 @@
 import { create } from 'zustand';
 
-interface AppState {
-  // Define your store's state here
-  // For now, it's just a placeholder
-  dummyValue: string;
-  setDummyValue: (value: string) => void;
-}
+export const useTravelStore = create<any>((set) => ({
+  tripResult: null,
+  setTripResult: (result: any) => set({ tripResult: result }),
+}));
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<any>((set) => ({
   dummyValue: 'Hello from store!',
-  setDummyValue: (value) => set({ dummyValue: value }),
+  setDummyValue: (value: any) => set({ dummyValue: value }),
 }));
