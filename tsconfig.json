@@ -13,9 +13,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": ".",
+    "baseUrl": "./ai-travel-planner",
     "paths": {
-      "@/*": ["./ai-travel-planner/src/*"]
+      "@/*": ["src/*"]
     },
     "plugins": [
       {
