@@ -1,11 +1,29 @@
 import { create } from 'zustand';
+import { TripInput, TripResult } from './types';
 
-export const useTravelStore = create<any>((set) => ({
+interface TravelStore {
+  tripInput: TripInput;
+  tripResult: TripResult | null;
+  isGenerating: boolean;
+  setTripInput: (input: Partial<TripInput>) => void;
+  setTripResult: (result: TripResult | null) => void;
+  setIsGenerating: (status: boolean) => void;
+}
+
+export const useTravelStore = create<TravelStore>((set) => ({
+  tripInput: {
+    destination: '',
+    departure: '',
+    startDate: new Date().toISOString().split('T')[0], // 默认今天
+    days: 3,
+    budget: 'standard',
+    companions: 2,
+    style: 'relaxed',
+    extraNotes: '',
+  },
   tripResult: null,
-  setTripResult: (result: any) => set({ tripResult: result }),
-}));
-
-export const useStore = create<any>((set) => ({
-  dummyValue: 'Hello from store!',
-  setDummyValue: (value: any) => set({ dummyValue: value }),
+  isGenerating: false,
+  setTripInput: (input) => set((state) => ({ tripInput: { ...state.tripInput, ...input } })),
+  setTripResult: (result) => set({ tripResult: result }),
+  setIsGenerating: (status) => set({ isGenerating: status }),
 }));
