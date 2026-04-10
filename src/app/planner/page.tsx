@@ -38,7 +38,6 @@ export default function PlannerPage() {
     setIsGenerating(true);
 
     try {
-      // 调用生成接口
       const response = await fetch('/api/trips/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -48,7 +47,6 @@ export default function PlannerPage() {
       const data = await response.json();
       
       if (response.ok) {
-        // 保存结果并跳转到结果页
         useTravelStore.getState().setTripResult(data.data);
         router.push(`/result/${data.data.id}`);
       } else {
@@ -62,41 +60,44 @@ export default function PlannerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-transparent">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <motion.h1 
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight"
+            className="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight drop-shadow-sm"
           >
             定制你的专属行程
           </motion.h1>
-          <p className="mt-4 text-lg text-slate-500">告诉我们你的想法，WanderAI 为你安排好一切。</p>
+          <p className="mt-4 text-lg text-slate-600/80 font-medium">告诉我们你的想法，WanderAI 为你安排好一切。</p>
         </div>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-10"
+          className="glass-panel rounded-[40px] p-6 md:p-10 shadow-xl shadow-blue-500/5 relative overflow-hidden"
         >
-          <form onSubmit={handleSubmit} className="space-y-8">
+          {/* 内部高光效果 */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent opacity-50" />
+          
+          <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
             
             {/* 基础信息 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                  <Navigation className="w-4 h-4 text-primary-500" /> 出发地
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                  <Navigation className="w-4 h-4 text-blue-500" /> 出发地
                 </label>
                 <input 
                   type="text" 
                   value={tripInput.departure}
                   onChange={(e) => setTripInput({ departure: e.target.value })}
                   placeholder="例如：北京" 
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                  className="w-full px-5 py-4 rounded-[20px] bg-white/40 border border-white/60 focus:bg-white/60 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md font-medium text-slate-800 placeholder:text-slate-400"
                 />
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                  <MapPin className="w-4 h-4 text-primary-500" /> 目的地 *
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                  <MapPin className="w-4 h-4 text-blue-500" /> 目的地 *
                 </label>
                 <input 
                   type="text" 
@@ -104,60 +105,65 @@ export default function PlannerPage() {
                   value={tripInput.destination}
                   onChange={(e) => setTripInput({ destination: e.target.value })}
                   placeholder="例如：东京, 巴黎" 
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                  className="w-full px-5 py-4 rounded-[20px] bg-white/40 border border-white/60 focus:bg-white/60 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md font-medium text-slate-800 placeholder:text-slate-400"
                 />
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                  <Calendar className="w-4 h-4 text-primary-500" /> 出发日期
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                  <Calendar className="w-4 h-4 text-blue-500" /> 出发日期
                 </label>
                 <input 
                   type="date" 
                   required
                   value={tripInput.startDate}
                   onChange={(e) => setTripInput({ startDate: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                  className="w-full px-5 py-4 rounded-[20px] bg-white/40 border border-white/60 focus:bg-white/60 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md font-medium text-slate-800"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                  <Calendar className="w-4 h-4 text-primary-500" /> 游玩天数
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                  <Calendar className="w-4 h-4 text-blue-500" /> 游玩天数
                 </label>
-                <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden">
-                  <button type="button" onClick={() => setTripInput({ days: Math.max(1, tripInput.days - 1) })} className="px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">-</button>
-                  <input type="number" readOnly value={tripInput.days} className="w-full text-center py-3 font-medium outline-none" />
-                  <button type="button" onClick={() => setTripInput({ days: Math.min(30, tripInput.days + 1) })} className="px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">+</button>
+                <div className="flex items-center bg-white/40 border border-white/60 rounded-[20px] overflow-hidden p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md">
+                  <button type="button" onClick={() => setTripInput({ days: Math.max(1, tripInput.days - 1) })} className="w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-2xl text-slate-600 font-bold text-xl transition-all shadow-sm">-</button>
+                  <input type="number" readOnly value={tripInput.days} className="flex-1 text-center py-3 font-bold text-lg bg-transparent outline-none text-slate-800" />
+                  <button type="button" onClick={() => setTripInput({ days: Math.min(30, tripInput.days + 1) })} className="w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-2xl text-slate-600 font-bold text-xl transition-all shadow-sm">+</button>
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                  <Users className="w-4 h-4 text-primary-500" /> 出行人数
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                  <Users className="w-4 h-4 text-blue-500" /> 出行人数
                 </label>
-                <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden">
-                  <button type="button" onClick={() => setTripInput({ companions: Math.max(1, tripInput.companions - 1) })} className="px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">-</button>
-                  <input type="number" readOnly value={tripInput.companions} className="w-full text-center py-3 font-medium outline-none" />
-                  <button type="button" onClick={() => setTripInput({ companions: Math.min(20, tripInput.companions + 1) })} className="px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">+</button>
+                <div className="flex items-center bg-white/40 border border-white/60 rounded-[20px] overflow-hidden p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md">
+                  <button type="button" onClick={() => setTripInput({ companions: Math.max(1, tripInput.companions - 1) })} className="w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-2xl text-slate-600 font-bold text-xl transition-all shadow-sm">-</button>
+                  <input type="number" readOnly value={tripInput.companions} className="flex-1 text-center py-3 font-bold text-lg bg-transparent outline-none text-slate-800" />
+                  <button type="button" onClick={() => setTripInput({ companions: Math.min(20, tripInput.companions + 1) })} className="w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-2xl text-slate-600 font-bold text-xl transition-all shadow-sm">+</button>
                 </div>
               </div>
             </div>
 
             {/* 预算选择 */}
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Wallet className="w-4 h-4 text-primary-500" /> 预算偏好
+              <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                <Wallet className="w-4 h-4 text-blue-500" /> 预算偏好
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {budgets.map((b) => (
                   <div 
                     key={b.id}
                     onClick={() => setTripInput({ budget: b.id })}
-                    className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${tripInput.budget === b.id ? 'border-primary-500 bg-primary-50' : 'border-slate-100 hover:border-slate-300'}`}
+                    className={`cursor-pointer p-5 rounded-[24px] transition-all backdrop-blur-md relative overflow-hidden ${
+                      tripInput.budget === b.id 
+                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 border border-blue-400' 
+                      : 'bg-white/40 hover:bg-white/60 border border-white/60 text-slate-700'
+                    }`}
                   >
-                    <div className={`font-semibold ${tripInput.budget === b.id ? 'text-primary-700' : 'text-slate-700'}`}>{b.label}</div>
-                    <div className="text-xs text-slate-500 mt-1">{b.desc}</div>
+                    {tripInput.budget === b.id && <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full blur-xl -mr-10 -mt-10" />}
+                    <div className="font-bold text-lg relative z-10">{b.label}</div>
+                    <div className={`text-sm mt-1.5 relative z-10 font-medium ${tripInput.budget === b.id ? 'text-blue-100' : 'text-slate-500'}`}>{b.desc}</div>
                   </div>
                 ))}
               </div>
@@ -165,8 +171,8 @@ export default function PlannerPage() {
 
             {/* 风格选择 */}
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Sparkles className="w-4 h-4 text-primary-500" /> 旅行风格
+              <label className="flex items-center gap-2 text-sm font-bold text-slate-700/80">
+                <Sparkles className="w-4 h-4 text-blue-500" /> 旅行风格
               </label>
               <div className="flex flex-wrap gap-3">
                 {styles.map((s) => (
@@ -174,14 +180,14 @@ export default function PlannerPage() {
                     key={s.id}
                     type="button"
                     onClick={() => setTripInput({ style: s.id })}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                    className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all font-bold backdrop-blur-md ${
                       tripInput.style === s.id 
-                      ? 'bg-slate-900 text-white border-slate-900' 
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 border border-blue-500/50' 
+                      : 'bg-white/40 hover:bg-white/60 text-slate-700 border border-white/60 shadow-sm'
                     }`}
                   >
-                    <s.icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{s.label}</span>
+                    <s.icon className={`w-4 h-4 ${tripInput.style === s.id ? 'text-blue-100' : 'text-blue-500'}`} />
+                    <span>{s.label}</span>
                   </button>
                 ))}
               </div>
@@ -189,7 +195,7 @@ export default function PlannerPage() {
 
             {/* 附加要求 */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-700">
+              <label className="block text-sm font-bold text-slate-700/80">
                 特殊需求 (选填)
               </label>
               <textarea 
@@ -197,21 +203,26 @@ export default function PlannerPage() {
                 value={tripInput.extraNotes}
                 onChange={(e) => setTripInput({ extraNotes: e.target.value })}
                 placeholder="例如：不吃海鲜，必须要去环球影城，安排一天购物..." 
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all resize-none"
+                className="w-full px-5 py-4 rounded-[24px] bg-white/40 border border-white/60 focus:bg-white/60 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] backdrop-blur-md font-medium text-slate-800 placeholder:text-slate-400 resize-none"
               />
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-red-100/80 backdrop-blur-md border border-red-200 text-red-600 rounded-[20px] text-sm font-bold flex items-center justify-center">
+                {error}
+              </motion.div>
+            )}
 
             <button
               type="submit"
               disabled={isGenerating}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg py-4 rounded-xl disabled:bg-primary-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary-500/30"
+              className="w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xl py-5 rounded-[24px] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-500/30"
             >
+              <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 group-hover:left-[200%] transition-all duration-1000 ease-in-out" />
               {isGenerating ? (
-                <><Loader2 className="w-6 h-6 animate-spin" /> AI 正在深度规划中...</>
+                <><Loader2 className="w-6 h-6 animate-spin" /> AI 正在深度思考中...</>
               ) : (
-                <><Sparkles className="w-6 h-6" /> 立即生成专属攻略</>
+                <><Sparkles className="w-6 h-6" /> 立即生成专属规划</>
               )}
             </button>
           </form>
