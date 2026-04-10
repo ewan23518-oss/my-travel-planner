@@ -44,7 +44,13 @@ export default function PlannerPage() {
         body: JSON.stringify(tripInput),
       });
       
-      const data = await response.json();
+      let data;
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error(`请求异常 (HTTP ${response.status}): 服务器未返回标准格式，可能请求超时或网络波动。`);
+      }
       
       if (response.ok) {
         useTravelStore.getState().setTripResult(data.data);

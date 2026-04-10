@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { TripInput, TripResult } from '@/lib/types';
 
+export const maxDuration = 60; // 允许 Vercel 运行更长时间（默认 Hobby 只有 10-15秒）
+
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
   try {
