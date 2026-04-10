@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "./styles.css";
 import Link from "next/link";
 import { Home, Plane, Compass, Heart, Settings, Map, Sparkles } from "lucide-react";
 import PriceComparator from "@/components/PriceComparator";
