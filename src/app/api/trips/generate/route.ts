@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { TripInput, TripResult } from '@/lib/types';
+import fetch from 'node-fetch';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
-export const maxDuration = 60; // 允许 Vercel 运行更长时间（默认 Hobby 只有 10-15秒）
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -81,11 +83,15 @@ export async function POST(req: Request) {
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
     
+    const proxyUrl = process.env.PROXY_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:7897' : null);
+    const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
+
     const fetchOptions: any = {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
       },
+      agent: proxyAgent,
       body: JSON.stringify({
         system_instruction: {
           parts: [{ text: '你是一个顶级的地理美食旅行专家。你必须且只能返回一个合法的 JSON 对象。1. 必须根据天数合理筛选必去景点，短途精华，长途深度。2. 只有 CityWalk 风格需严格限制 2km 步行；其他风格应推荐公交、地铁或网约车。3. 购物规划必须以“商圈”为核心。4. **美食探索**：必须体现以吃为本（多频次推荐），包含早餐、正餐、多个下午茶/奶茶，并提供 5-8 个备选美食推荐池。建议包含必点菜和打卡贴士。5. **亲子游玩 (Family)**：必须体现低强度节奏（每天≤3个点）、包含家长实用建议（推车/母婴室等）、优先选择儿童友好场所。6. 严禁输出任何 Markdown 标记。' }]
