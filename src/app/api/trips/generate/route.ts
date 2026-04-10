@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { TripInput, TripResult } from '@/lib/types';
-import fetch from 'node-fetch';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -12,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '目的地不能为空' }, { status: 400 });
     }
 
-    const modelName = 'Gemma431B';
+    const modelName = 'Gemma431b';
 
     if (!apiKey) {
       return NextResponse.json({ error: 'API KEY 未配置' }, { status: 500 });
@@ -20,7 +18,6 @@ export async function POST(req: Request) {
     
     const promptText = `
 你是一个顶级的旅行规划AI，你的任务是根据用户要求，返回一个结构完整、数据准确的JSON。
-
 **用户要求:**
 - 目的地: ${input.destination}
 - 出发日期: ${input.startDate}
@@ -56,8 +53,7 @@ export async function POST(req: Request) {
 7. **地理聚类**: 每一天的行程点必须在地理位置上聚类，严禁跨城折返跑。
 
 **输出格式要求:**
-你必须返回一个严格的 JSON 对象。
-结构如下:
+你必须返回一个严格的 JSON 对象。结构如下:
 {
   "overview": "不少于100字的行程亮点描述。",
   "budgetBreakdown": { "transport": 100, "hotel": 200, "food": 150, "tickets": 80, "others": 50, "total": 580, "currency": "CNY" },
@@ -83,19 +79,10 @@ export async function POST(req: Request) {
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
     
-    // 自动判断代理：仅在本地环境且配置了代理时使用
-    const proxyUrl = process.env.PROXY_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:7897' : null);
-    const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl, {
-      keepAlive: true,
-      timeout: 300000,
-      scheduling: 'lifo'
-    }) : undefined;
-
     const fetchOptions: any = {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Connection': 'keep-alive' 
       },
       body: JSON.stringify({
         system_instruction: {
@@ -107,13 +94,8 @@ export async function POST(req: Request) {
           response_mime_type: "application/json",
           max_output_tokens: 8192
         }
-      }),
-      timeout: 300000 
+      })
     };
-
-    if (proxyAgent) {
-      fetchOptions.agent = proxyAgent;
-    }
 
     const maxRetries = 3;
     let lastError;
