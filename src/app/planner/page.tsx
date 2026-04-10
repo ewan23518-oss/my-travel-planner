@@ -45,8 +45,8 @@ export default function PlannerPage() {
       });
       
       let data;
-      const text = await response.text();
       try {
+        const text = await response.text();
         data = JSON.parse(text);
       } catch (e) {
         throw new Error(`请求异常 (HTTP ${response.status}): 服务器未返回标准格式，可能请求超时或网络波动。`);
