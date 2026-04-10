@@ -50,11 +50,10 @@ export default function PlannerPage() {
         useTravelStore.getState().setTripResult(data.data);
         router.push(`/result/${data.data.id}`);
       } else {
-        setError(data.error || '生成失败，请重试');
-        setIsGenerating(false);
+        throw new Error(data.error || '生成失败，请重试');
       }
-    } catch (err) {
-      setError('网络错误，请检查网络连接');
+    } catch (err: any) {
+      setError(err.message || '网络错误，请检查网络连接');
       setIsGenerating(false);
     }
   };
